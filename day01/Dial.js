@@ -4,6 +4,9 @@ export class Dial {
         this.finalNum = finalNum;
         this.currentNum = startNum;
         this.dialNumbers = [];
+        this.rotationQuantity = [];
+        this.rotationDirection = [];
+        this.zeroCounter = 0;
     }
 
     setDialNumbers() {
@@ -13,6 +16,10 @@ export class Dial {
         for (let i = 0; i <= totNumbers; i++) {
             this.dialNumbers.push(i);
         }
+    }
+
+    setRotations(rules) {
+
     }
 }
 

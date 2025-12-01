@@ -13,13 +13,18 @@ function main() {
             return
         }
 
-        processDay(data);
+        const rules = formatInput(data);
+
+        const dial = new Dial(0, 99, 50);
+
+        dial.setDialNumbers();
+        dial.setRotations(rules);
     });
 }
 
-function processDay(data) {
-    const dial = new Dial(0, 99, 50);
-    dial.setDialNumbers
-    console.log(dial);
-    
+function formatInput(data) {
+    const formatData = [];
+    console.log(data, data[11]);
+
+    return formatData
 }
