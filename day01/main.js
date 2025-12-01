@@ -17,14 +17,16 @@ function main() {
 
         const dial = new Dial(0, 99, 50);
 
-        dial.setDialNumbers();
         dial.setRotations(rules);
+        dial.countZeros();
+        
+        console.log(dial, dial.zeroCounter);
+        
     });
 }
 
 function formatInput(data) {
-    const formatData = [];
-    console.log(data, data[11]);
+    const formatData = data.split(/\r?\n/);
 
     return formatData
 }
