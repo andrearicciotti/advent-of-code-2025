@@ -20,7 +20,7 @@ function main() {
         dial.setRotations(rules);
         dial.countZeros();
         
-        console.log(dial, dial.zeroCounter);
+        console.log(dial.zeroCounter);
         
     });
 }

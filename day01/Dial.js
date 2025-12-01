@@ -32,7 +32,7 @@ export class Dial {
                             this.curPosition = 0;
                         }
 
-                        j == this.rotationQuantity[i] && this.curPosition == 0 ? this.zeroCounter++ : '';
+                        this.curPosition == 0 ? this.zeroCounter++ : '';
 
                     }
 
@@ -46,7 +46,7 @@ export class Dial {
                             this.curPosition = 99;
                         }
                         
-                        j == this.rotationQuantity[i] && this.curPosition == 0 ? this.zeroCounter++ : '';
+                        this.curPosition == 0 ? this.zeroCounter++ : '';
 
                     }
 
