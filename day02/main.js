@@ -13,24 +13,31 @@ function main() {
     for (let i = 0; i < ranges.length; i++) {
         const min = parseInt(ranges[i].split('-')[0]);
         const max = parseInt(ranges[i].split('-')[1]);
-        
+
         for (let j = min; j <= max; j++) {
             invalidIdsCounter += isInvalid(j);
         }
     }
 
     console.log(invalidIdsCounter);
-
 }
 
 function isInvalid(id) {
+    
     const idLength = id.toString().length;
-    const firstPart = id.toString().slice(idLength / 2);
-    const secondPart = id.toString().slice(0, idLength / 2);
+    const maxStringLength = Math.floor(idLength / 2);
+    
+    for (let i = 1; i <= maxStringLength; i++) {
+        const strToMatch = id.toString().slice(0, i);
 
-    if (firstPart == secondPart) {
-        return id
-    } else {
-        return 0
+        const match = id.toString().match(new RegExp(strToMatch, 'g'));
+        const strLength = strToMatch.length;
+
+        if (idLength == match.length * strLength) {
+
+            return id
+        }
     }
+
+    return 0
 }
