@@ -1,6 +1,9 @@
 {
   "type": "module",
   "dependencies": {
-    "node-fs": "^0.1.7"
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1"
   }
 }
