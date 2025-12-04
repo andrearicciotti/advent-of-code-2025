@@ -2,6 +2,7 @@ import fs from "node:fs";
 
 const day = 'day04';
 const filePath = './' + day + '.txt';
+let totalRemovableRolls = 0;
 
 main();
 
@@ -9,17 +10,37 @@ function main() {
     const file = fs.readFileSync(filePath, 'utf8');
 
     const rollsRows: string[][] = file.split(/\r\n/).map(row => row.split(''));
-    let accessibleRolls = 0;
+    countAccessibleRolls(rollsRows, 0, true);
+
+    console.log(totalRemovableRolls);
+}
+
+function countAccessibleRolls(rollsRows: string[][], accessibleRolls: number, firstEntry: boolean): any {
+    
+    totalRemovableRolls += accessibleRolls;
+    let removableRolls = 0;
+
+    if (!firstEntry && accessibleRolls == 0) {
+        return totalRemovableRolls
+    }
 
     rollsRows.forEach((row, indexRow) => {
         row.forEach((roll, indexRoll) => {
             if (roll == '@') {
-                accessibleRolls += checkAccess(roll, indexRoll, row, indexRow, rollsRows);
+                removableRolls += checkAccess(roll, indexRoll, row, indexRow, rollsRows);
             }
         });
     });
 
-    console.log(accessibleRolls);
+    rollsRows.forEach((row, indexRow) => {
+        row.forEach((roll, indexRoll) => {
+            if (roll == 'x') {
+                rollsRows[indexRow][indexRoll] = '.';
+            }
+        });
+    });
+
+    countAccessibleRolls(rollsRows, removableRolls, false);
 }
 
 function checkAccess(roll: string, indexRoll: number, row: string[], indexRow: number, rollsRows: string[][]): number {
@@ -35,60 +56,61 @@ function checkAdjacent(roll: string, indexRoll: number, row: string[], indexRow:
     // @ - -
     // - x -
     // - - -
-    if (rollsRows[indexRow - 1] && rollsRows[indexRow - 1][indexRoll - 1] && rollsRows[indexRow - 1][indexRoll - 1] == '@') {
+    if (rollsRows[indexRow - 1] && rollsRows[indexRow - 1][indexRoll - 1] && (rollsRows[indexRow - 1][indexRoll - 1] == '@' || rollsRows[indexRow - 1][indexRoll - 1] == 'x')) {
         adjacentRolls++
     }
 
     // - @ -
     // - x -
     // - - -
-    if (rollsRows[indexRow - 1] && rollsRows[indexRow - 1][indexRoll] && rollsRows[indexRow - 1][indexRoll] == '@') {
+    if (rollsRows[indexRow - 1] && rollsRows[indexRow - 1][indexRoll] && (rollsRows[indexRow - 1][indexRoll] == '@' || rollsRows[indexRow - 1][indexRoll] == 'x')) {
         adjacentRolls++
     }
 
     // - - @
     // - x -
     // - - -
-    if (rollsRows[indexRow - 1] && rollsRows[indexRow - 1][indexRoll + 1] && rollsRows[indexRow - 1][indexRoll + 1] == '@') {
+    if (rollsRows[indexRow - 1] && rollsRows[indexRow - 1][indexRoll + 1] && (rollsRows[indexRow - 1][indexRoll + 1] == '@' || rollsRows[indexRow - 1][indexRoll + 1] == 'x')) {
         adjacentRolls++
     }
 
     // - - -
     // @ x -
     // - - -
-    if (row[indexRoll - 1] && row[indexRoll - 1] == '@') {
+    if (row[indexRoll - 1] && (row[indexRoll - 1] == '@' || row[indexRoll - 1] == 'x')) {
         adjacentRolls++
     }
 
     // - - -
     // - x @
     // - - -
-    if (row[indexRoll + 1] && row[indexRoll + 1] == '@') {
+    if (row[indexRoll + 1] && (row[indexRoll + 1] == '@' || row[indexRoll + 1] == 'x')) {
         adjacentRolls++
     }
 
     // - - -
     // - x -
     // @ - -
-    if (rollsRows[indexRow + 1] && rollsRows[indexRow + 1][indexRoll - 1] && rollsRows[indexRow + 1][indexRoll - 1] == '@') {
+    if (rollsRows[indexRow + 1] && rollsRows[indexRow + 1][indexRoll - 1] && (rollsRows[indexRow + 1][indexRoll - 1] == '@' || rollsRows[indexRow + 1][indexRoll - 1] == 'x')) {
         adjacentRolls++
     }
 
     // - - -
     // - x -
     // - @ -
-    if (rollsRows[indexRow + 1] && rollsRows[indexRow + 1][indexRoll] && rollsRows[indexRow + 1][indexRoll] == '@') {
+    if (rollsRows[indexRow + 1] && rollsRows[indexRow + 1][indexRoll] && (rollsRows[indexRow + 1][indexRoll] == '@' || rollsRows[indexRow + 1][indexRoll] == 'x')) {
         adjacentRolls++
     }
 
     // - - -
     // - x -
     // - - @
-    if (rollsRows[indexRow + 1] && rollsRows[indexRow + 1][indexRoll + 1] && rollsRows[indexRow + 1][indexRoll + 1] == '@') {
+    if (rollsRows[indexRow + 1] && rollsRows[indexRow + 1][indexRoll + 1] && (rollsRows[indexRow + 1][indexRoll + 1] == '@' || rollsRows[indexRow + 1][indexRoll + 1] == 'x')) {
         adjacentRolls++
     }
-    
+
     if (adjacentRolls < 4) {
+        rollsRows[indexRow][indexRoll] = 'x';
         return true
     }
     return false
