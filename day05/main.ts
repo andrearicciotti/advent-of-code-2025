@@ -6,41 +6,88 @@ const filePath = './' + day + '.txt';
 main();
 
 function main() {
-    let totalFreshIngredients = 0;
-
     const file = fs.readFileSync(filePath, 'utf8');
     const aFile = file.split(/\r\n/);
 
     const ranges = aFile.filter(file => file.includes('-'));
-    const topLimits: number[] = ranges.map(range => parseInt(range.split('-')[1]));
-    const bottomLimits: number[] = ranges.map(range => parseInt(range.split('-')[0]));
-    const ingredientsId = aFile.filter(file => !file.includes('-') && file != '').map(file => parseInt(file));
+    const updatedRanges: string[] = updateRanges(ranges, true, 0);
+    
+    console.log("Ranges updated: ", updatedRanges);
 
-    console.log("Ranges: ", ranges, "Bottom: ", bottomLimits, "Top: ", topLimits, "Ids: ", ingredientsId);
-
-    totalFreshIngredients = checkFreshIngredients(ranges, bottomLimits, topLimits, ingredientsId);
+    const totalFreshIngredients = countFreshIngredients(updatedRanges);
 
     console.log(totalFreshIngredients);
-
 }
 
-function checkFreshIngredients(ranges: string[], bottomLimits: number[], topLimits: number[], ingredientsId: number[]): number {
-    let freshIngredients = 0;
+function updateRanges(ranges: string[], firstCall: boolean, rangesUpdated: number): string[] {
+    const checkedRanges: string[] = [];
 
-    for (let i = 0; i < ingredientsId.length; i++) {
-        const curIngredientId = ingredientsId[i];
+    if (!firstCall && rangesUpdated == 0) {
+        return ranges;
+    }
+    
+    rangesUpdated  = 0;
 
-        for (let j = 0; j < ranges.length; j++) {
+    for (let i = 0; i < ranges.length; i++) {
+        const curRange = ranges[i];
+        const bottomLimit = parseInt(curRange.split('-')[0]);
+        const topLimit = parseInt(curRange.split('-')[1]);
 
-            const bottomLimit = bottomLimits[j];
-            const topLimit = topLimits[j];
+        for (let j = 0; j < checkedRanges.length; j++) {
+            const curCheckedRange = checkedRanges[j];
 
-            if (curIngredientId >= bottomLimit && curIngredientId <= topLimit) {
-                freshIngredients++;
-                break
+            const checkedBottomLimit = parseInt(curCheckedRange.split('-')[0]);
+            const checkedTopLimit = parseInt(curCheckedRange.split('-')[1]);
+
+            const noUpdate = bottomLimit >= checkedBottomLimit && topLimit <= checkedTopLimit; // range interamente compreso - esco
+            const updateBottom = bottomLimit < checkedBottomLimit && topLimit >= checkedBottomLimit && topLimit <= checkedTopLimit; // range compreso che estende limite basso - aggiorno limite basso
+            const updateTop = topLimit > checkedTopLimit && bottomLimit <= checkedTopLimit && bottomLimit >= checkedBottomLimit; // range compreso che estende limite alto - aggiorno limite alto
+            const updateLimits = topLimit > checkedTopLimit && bottomLimit < checkedTopLimit; // range che comprende il vecchio range - aggiorno entrambi i limiti
+
+            
+            if (noUpdate) {
+                continue
             }
+            
+            if (updateBottom) {
+                checkedRanges[j] = bottomLimit + '-' + checkedTopLimit;
+                rangesUpdated ++;
+                continue
+            }
+
+            if (updateTop) {
+                checkedRanges[j] = checkedBottomLimit + '-' + topLimit;
+                rangesUpdated ++;
+                continue
+            }
+
+            if (updateLimits) {
+                checkedRanges[j] = bottomLimit + '-' + topLimit;
+                rangesUpdated ++;
+                continue
+            }
+
+            // range nuovo - aggiorno array
+            if (j == checkedRanges.length -1) {
+                checkedRanges.push(bottomLimit + '-' + topLimit);
+            }
+        }
+
+        if (checkedRanges.length == 0) {
+            // range nuovo - aggiorno array
+            checkedRanges.push(bottomLimit + '-' + topLimit);
         }
     }
 
-    return freshIngredients
+    return updateRanges(checkedRanges, false, rangesUpdated);
+}
+
+function countFreshIngredients(ranges: string[]): number {
+    let totIngredients = 0;
+
+    ranges.forEach(range => {
+        totIngredients += (parseInt(range.split('-')[1]) - parseInt(range.split('-')[0])) +1;
+    });
+
+    return totIngredients
 }
