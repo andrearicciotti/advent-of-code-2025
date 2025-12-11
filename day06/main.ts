@@ -50,7 +50,7 @@ function calcTotal(rows: string[][]): number {
                 // se non è quello iniziale facciamo i calcoli
                 if (x != 0) {
 
-                    // facciamo le operazioni sui numeri raccolti e aggiorniamo operatore
+                    // facciamo le operazioni sui numeri raccolti e aggiorniamo l'operatore
                     for (let i = 0; i < curColNumbers.length; i++) {
                         const elem = curColNumbers[i];
 
