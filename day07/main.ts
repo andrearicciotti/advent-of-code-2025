@@ -2,6 +2,7 @@ import fs from "node:fs";
 
 const day = 'day07';
 const filePath = './' + day + '.txt';
+const cache = new Map<string, number>();
 
 main();
 
@@ -13,57 +14,53 @@ function main() {
     const x = matrix[0].indexOf('S');
     const y = 0;
 
-    const totalSplit = tachionRay(x, y, matrix, 0);
-    console.log(totalSplit);
+    const timelines = tachionRay(x, y, matrix);
+    console.log(timelines);
 }
 
-function tachionRay(x: number, y: number, matrix: string[][], totalSplit: number): number {
+
+function tachionRay(x: number, y: number, matrix: string[][]): number {
+    let key = x + "-" + y;
+    let timelines = 0;
 
     if (y >= matrix.length) {
-        console.log("baseCase", totalSplit);
-        console.log(matrix.map(row => row.join('')).join('\r\n'));
-        
-        return totalSplit
+        timelines++;
+        cache.set(key, timelines);
+        return timelines
     }
 
     const curElem = matrix[y][x];
 
+    if (cache.has(key)) {
+        timelines += cache.get(key)!;
+        return timelines
+    }
 
     switch (curElem) {
         case '^':
-            let hasSplitted = false;
-            if (matrix[y][x + 1] != '|') {
 
-                matrix[y][x + 1] = '|';
-                totalSplit = tachionRay(x + 1, y, matrix, totalSplit);
-                hasSplitted = true;
-            }
+            matrix[y][x + 1] = '|';
+            timelines += tachionRay(x + 1, y, matrix);
 
-            if (matrix[y][x - 1] != '|') {
-
-                matrix[y][x - 1] = '|';
-                totalSplit = tachionRay(x - 1, y, matrix, totalSplit);
-                hasSplitted = true;
-            }
-            
-            if(hasSplitted) {
-                totalSplit++;
-            }
+            matrix[y][x - 1] = '|';
+            timelines += tachionRay(x - 1, y, matrix);
 
             break;
 
         case '.':
             matrix[y][x] = '|';
-            totalSplit = tachionRay(x, y + 1, matrix, totalSplit);
+            timelines += tachionRay(x, y + 1, matrix);
 
             break;
 
         default:
-            totalSplit = tachionRay(x, y + 1, matrix, totalSplit);
+            timelines += tachionRay(x, y + 1, matrix);
 
             break;
 
     }
 
-    return totalSplit
+    cache.set(key, timelines);
+
+    return timelines
 }
